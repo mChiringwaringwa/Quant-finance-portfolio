@@ -40,4 +40,4 @@ The framework was evaluated using chronological out-of-sample testing and walk-f
 - yfinance
 
 ## Key Outcome
-The project demonstrates a complete quantitative investment workflow from factor-based asset selection through portfolio construction, optimisation and robustness testing.
+The project demonstrates a systematic quantitative investment workflow covering factor-based asset selection, portfolio construction and risk-return optimisation. The framework incorporates correlation and covariance analysis, portfolio weight optimisation, benchmark comparison, chronological out-of-sample testing, walk-forward validation, regime robustness and parameter sinsitivity analysis.
