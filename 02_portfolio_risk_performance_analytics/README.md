@@ -84,10 +84,10 @@ The framework evaluates:
 - Matplotlib
 - yfinance
 
-## Key Outcome
-The project demonstrates the ability to evaluate an existing quantitative portfolio beyond headline returns by analysing benchmark-relative performance, active risk, information efficiency, asset-level risk contribution and performance attribution.
+## Key Outcomes
+The project demonstrates the ability to evaluate an existing quantitative portfolio beyond headline returns by decomposing performance and risk into benchmark-relative performance, active risk, information efficiency, asset-level risk contribution and performance attribution.
 
-The framework also incorporates transaction-cost sensitivity to assess the robustness of portfolio performance under realistic implementation assumptions.
+The framework also incorporates transaction-cost sensitivity to assess whether observed portfolio performance remains economically meaningful under realistic implementation assumptions.
 
 ## Relationship to Project 01
 Project 01 focuses on:
