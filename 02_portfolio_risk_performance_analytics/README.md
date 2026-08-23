@@ -1,99 +1,206 @@
-# Portfolio Risk & Performance Analytics
+# Project 02 — Portfolio Risk & Performance Analytics
 
 ## Objective
-Develop a quantitative framework for evaluating an existing investment portfolio from a risk, performance and benchmark-relative perspective.
+This project evaluates a constrained equity portfolio against an
+equal-weight benchmark using portfolio performance, risk decomposition,
+active return analysis, tracking error, information ratio, and
+performance attribution.
 
-The project focuses on measuring portfolio performance, identifying sources of risk and return, and assessing whether active portfolio decisions generated value relative to a benchmark.
+The analysis investigates whether imposing a maximum 40% allocation
+constraint provides a more risk-controlled portfolio relative to an
+equal-weight benchmark.
 
-## Scope
-This project builds on an already constructed portfolio and focuses specifically on portfolio analytics rather than asset selection or portfolio construction.
-The analysis covers:
+---
 
-- Benchmark comparison
-- Active return analysis
-- Tracking error
-- Information ratio
-- Risk contribution
-- Performance attribution
-- Transaction-cost sensitivity
-- Portfolio risk and performance interpretation
+## Portfolio
+The final portfolio consists of:
+
+| Asset | Portfolio Weight | Benchmark Weight |
+|-------|------------------|------------------|
+| AAPL  | 40%              | 33.33%           |
+| GOOG  | 40%              | 33.33%           |
+| META  | 20%              | 33.33%           |
+
+The benchmark is an equal-weight portfolio:
+
+- AAPL: 33.33%
+- GOOG: 33.33%
+- META: 33.33%
+
+---
+
+## Data
+
+- Assets: AAPL, MSFT, NVDA, GOOG, META
+- Final portfolio universe: AAPL, GOOG, META
+- Data source: Yahoo Finance
+- Frequency: Daily
+- Period: 16 July 2025 – 15 July 2026
+- Adjusted closing prices used for return calculations
+
+---
 
 ## Methodology
+The analysis includes:
 
-### 1. Benchmark Analysis
-The portfolio was evaluated against an equal-weight benchmark representing a passive allocation to the same investment universe.
+1. Daily return calculation
+2. Portfolio return calculation
+3. Equal-weight benchmark construction
+4. Volatility estimation
+5. Sharpe ratio
+6. Maximum drawdown
+7. Covariance and correlation analysis
+8. Portfolio risk contribution
+9. Active return analysis
+10. Active weight decomposition
+11. Tracking error
+12. Information ratio
+13. Performance attribution
+14. Transaction-cost sensitivity
 
-Portfolio and benchmark returns were compared over the evaluation period.
+---
 
-### 2. Active Return
-Active return was calculated as:
+## Active Portfolio Analysis
+Relative to the equal-weight benchmark, the maximum 40% portfolio
+held:
 
-Active Return = Portfolio Return - Benchmark Return
+| Asset | Active Weight |
+|-------|---------------|
+| AAPL  | +6.67%        |
+| GOOG  | +6.67%        |
+| META  | -13.33%       |
 
-This measures the additional return generated relative to the benchmark.
+The portfolio therefore represented an overweight to AAPL and GOOG
+and an underweight to META.
 
-### 3. Tracking Error
-Tracking error was calculated using the volatility of active returns:
+---
 
-Tracking Error = Std(Portfolio Return - Benchmark Return)
+## Out-of-Sample Performance
+The final out-of-sample results were:
 
-This measures the consistency of the portfolio's deviation from benchmark performance.
+| Metric                    | Portfolio | Benchmark |
+|---------------------------|-----------|-----------|
+| Total Return              | 4.98%     |   5.67%   |
+| Active Return             | -0.68%    |    —      |
+| Information Ratio         | -0.73     |    —      |
+| Annualized Tracking Error | 5.38%     |    —      |
 
-### 4. Information Ratio
-The Information Ratio was calculated as:
+The constrained portfolio underperformed the equal-weight benchmark
+during the final test period.
 
-Information Ratio = Active Return / Tracking Error
+---
 
-This evaluates active performance relative to the risk taken against the benchmark.
+## Risk Decomposition
 
-### 5. Risk Contribution
-Portfolio risk was decomposed into the contribution of individual assets.
+Portfolio daily volatility was approximately:
 
-The analysis uses portfolio weights and the covariance structure of asset returns to identify how much each asset contributes to total portfolio volatility.
+1.31%
 
-This provides a more informative view of portfolio risk than considering asset weights alone.
+Risk contribution was:
 
-### 6. Performance Attribution
-Portfolio performance was decomposed to identify the contribution of individual holdings to overall portfolio returns.
+| Asset | Risk Contribution |
+|-------|-------------------|
+| AAPL  | 33.18% |
+| GOOG  | 46.02% |
+| META  | 20.80% |
 
-This analysis helps explain which portfolio positions were responsible for positive or negative performance.
+The results demonstrate that capital allocation and risk contribution
+are not equivalent. GOOG represented 40% of portfolio capital but
+contributed approximately 46% of total portfolio risk.
 
-### 7. Transaction-Cost Sensitivity
-The portfolio was evaluated under different transaction-cost assumptions to assess the robustness of observed performance after allowing for implementation costs.
+---
 
-This tests whether the strategy's apparent performance remains economically meaningful after accounting for trading frictions.
+## Performance Attribution
 
-## Key Risk and Performance Measures
-The framework evaluates:
+Active performance contribution was:
 
-- Portfolio return
-- Benchmark return
-- Active return
-- Volatility
-- Tracking error
-- Information ratio
-- Risk contribution
-- Asset-level performance contribution
-- Transaction-cost sensitivity
+| Asset | Active Contribution     |
+|-------|-------------------------|
+| AAPL  | +0.91 percentage points |
+| GOOG  | -0.35 percentage points |
+| META  | -1.31 percentage points |
+| Total | -0.74 percentage points |
+
+The underweight to META was the largest negative contributor to active
+performance, while the overweight to AAPL generated a positive
+contribution.
+
+---
+
+## Transaction Cost Sensitivity
+
+The equal-weight benchmark remained relatively robust under different
+transaction-cost assumptions:
+
+| Transaction Cost | Total Return | Sharpe |
+|------------------|--------------|--------|
+| 0 bps            | 5.67%        | 1.2905 |
+| 10 bps           | 5.64%        | 1.2846 |
+| 25 bps           | 5.59%        | 1.2758 |
+| 50 bps           | 5.52%        | 1.2610 |
+
+Transaction costs reduced performance gradually but did not materially
+alter the overall conclusion.
+
+---
+
+## Key Findings
+
+### 1. Constraints can control concentration risk
+
+The maximum 40% constraint prevents the portfolio from becoming
+excessively concentrated in a single asset.
+
+### 2. Equal weighting remains a useful benchmark
+
+The equal-weight portfolio provides a transparent reference point
+against which the effect of active allocation decisions can be measured.
+
+### 3. Portfolio weights do not fully describe portfolio risk
+
+GOOG contributed approximately 46% of portfolio risk despite having
+a 40% portfolio weight.
+
+### 4. Active allocation can create negative active performance
+
+The maximum 40% portfolio underperformed the equal-weight benchmark
+during the final out-of-sample period.
+
+### 5. Attribution explains the source of underperformance
+
+META was the largest negative contributor to active performance,
+while AAPL was the largest positive contributor.
+
+---
+
+## Professional Interpretation
+The project demonstrates the importance of separating portfolio
+construction from portfolio risk analysis.
+
+A portfolio can have apparently reasonable allocation weights while
+still exhibiting disproportionate risk contributions.
+
+Similarly, a constrained portfolio may provide better concentration
+control without necessarily producing higher out-of-sample returns.
+
+The results therefore support evaluating portfolio construction using
+both performance and risk measures rather than relying solely on
+return or Sharpe ratio.
+
+---
 
 ## Tools
+
 - Python
-- pandas
 - NumPy
-- SciPy
+- pandas
 - Matplotlib
 - yfinance
 
-## Key Outcomes
-The project demonstrates the ability to evaluate an existing quantitative portfolio beyond headline returns by decomposing performance and risk into benchmark-relative performance, active risk, information efficiency, asset-level risk contribution and performance attribution.
+---
 
-The framework also incorporates transaction-cost sensitivity to assess whether observed portfolio performance remains economically meaningful under realistic implementation assumptions.
+## Files
+`portfolio_risk_performance.py`
 
-## Relationship to Project 01
-Project 01 focuses on:
-
-**Factor-based asset selection → portfolio construction → optimisation → robust validation**
-This project focuses on:
-
-**Existing portfolio → risk measurement → benchmark-relative analysis → performance attribution**
-Together, the two projects demonstrate both portfolio construction capability and post-construction portfolio analytics.
+Contains the complete Python implementation of the portfolio risk,
+performance, attribution, and transaction-cost analysis.
