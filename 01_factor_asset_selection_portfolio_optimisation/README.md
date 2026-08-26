@@ -2,18 +2,31 @@
 
 ## Objective
 
-Develop a systematic quantitative portfolio construction framework that combines:
+Develop a systematic quantitative investment framework that combines:
 
 - Multi-factor asset selection
 - Rolling factor estimation
 - Hyperparameter optimisation
 - Parameter stability analysis
 - Covariance and correlation analysis
-- Constrained maximum-Sharpe portfolio optimisation
-- Frozen portfolio candidate generation
-- Chronological out-of-sample validation
+- Constrained portfolio optimisation
+- Benchmark portfolio construction
+- Alternative portfolio construction
+- Chronological out-of-sample testing
+- Transaction-cost sensitivity
+- Benchmark-relative performance analysis
+- Portfolio risk decomposition
 
-The objective is not simply to identify the best-performing portfolio in historical data, but to build a process that separates model development from genuinely unseen testing.
+The objective is not simply to find the portfolio with the highest historical
+return.
+
+Instead, the project investigates whether a systematic factor-based selection
+process can produce a diversified portfolio and whether constrained portfolio
+optimisation can provide a useful alternative to a simple equal-weight
+allocation.
+
+Particular emphasis is placed on maintaining a strict separation between model
+development and the genuinely unseen final test period.
 
 ---
 
@@ -27,147 +40,117 @@ The initial investment universe consists of five large-cap US equities:
 - GOOG — Alphabet
 - META — Meta Platforms
 
-The S&P 500 (^GSPC) is used as the market benchmark for beta estimation.
+The S&P 500 (`^GSPC`) is used as the market benchmark for rolling beta
+estimation.
 
-### Data Period
+### Data 
 
-Common usable period:
+Historical market data is stored locally as CSV files and loaded into Python
+using pandas.
 
-**28 July 2025 – 14 July 2026**
+Expected input files include:
 
-The data is divided chronologically into:
+```text
+data/
+├── AAPL.csv
+├── MSFT.csv
+├── NVDA.csv
+├── GOOG.csv
+├── META.csv
+└── ^GSPC.csv
 
-1. Development dataset
-2. Final unseen out-of-sample test dataset
-
-No future observations are used during model development.
-
----
-
-# Methodology
-
-## 1. Data Preparation
-
-Historical price data is loaded from CSV files using pandas.
-
-The datasets are:
-
+The raw files are:
+- loaded from CSV,
 - converted to datetime format,
-- aligned to a common period,
-- converted into a unified asset universe,
+- converted to numeric price data,
+- aligned to a common trading-date intersection,
 - sorted chronologically,
-- divided into development and final test datasets.
+- checked for missing observations.
 
-The final test period remains unseen until all model and portfolio decisions are frozen.
+A reusable processed dataset is then saved as:
+      data/processed_prices.csv
 
----
+This allows subsequent projects to work from the same cleaned and aligned dataset rather than repeatedly preparing the raw data.
 
-## 2. Development / Final Test Split
+## Development and Final Test Framework
 
-The complete dataset is divided chronologically using an 80/20 split.
+The complete dataset is divided chronologically into:
+- 80% Development
+- 20% Final Unseen Test
 
-### Development Dataset
+No random shuffling is performed.
 
-Used for:
-
-- factor construction,
+The development dataset is used for:
+- factor estimation,
 - asset selection,
+- hyperparameter optimisation,
 - covariance estimation,
 - correlation analysis,
-- hyperparameter optimisation,
-- portfolio optimisation.
+- portfolio construction.
 
-### Final Test Dataset
+The final test dataset remains untouched until the portfolio specifications have been frozen.
+This provides a genuine out-of-sample evaluation.
 
-Used only for final out-of-sample evaluation.
+## Inner Development Validation
+The development dataset is further divided chronologically into:
+- 80% Optimisation Train
+- 20% Validation
 
-This separation reduces the risk of evaluating a strategy on information that influenced its construction.
+The optimisation-train period is used to calculate factor snapshots and test different factor lookback parameters.
 
----
+The validation period is used to compare the resulting asset-selection portfolios.
 
-# Factor Model
+The final 20% test period is not used during this process.
 
+Therefore the information flow is:
+
+Full Historical Data
+        │
+        ├── 80% Development
+        │      │
+        │      ├── 80% Optimisation Train
+        │      │
+        │      └── 20% Validation
+        │
+        └── 20% Final Unseen Test
+
+## Factor Model
 Four quantitative factors are calculated for each candidate asset.
-
-## 1. Rolling Beta
-
-Beta measures the sensitivity of an asset to movements in the S&P 500.
-
-\[
-\beta_i =
-\frac{\operatorname{Cov}(R_i,R_m)}
-{\operatorname{Var}(R_m)}
-\]
-
-A rolling beta is calculated using different candidate windows.
-
+1. Rolling Beta
+Beta measures the sensitivity of an asset's return to movements in the S&P 500.
+      β_i = Cov(R_i,R_m )/Var(R_m ) 
+Rolling windows of 40, 60 and 80 trading days are tested.
 Lower beta receives a higher factor score.
 
----
-
-## 2. Momentum
-
-Momentum measures the historical price appreciation over a rolling window.
-
-\[
-Momentum_t =
-\frac{P_t}{P_{t-k}}-1
-\]
-
+2. Rolling Momentum
+Momentum measures historical price appreciation over a specified lookback period.
+      Momentum_t = {P_t/P_(t-k)} -1
 Higher momentum receives a higher score.
+Rolling windows of 40, 60 and 80 trading days are tested.
 
----
+3. Rolling Volatility
+Rolling volatility is calculated from daily returns and annualised using 252 trading days.
+      σ_annual=σ_daily √252
+Rolling windows of 10, 20 and 30 trading days are tested.
+Lower volatility receives a higher factor score.
 
-## 3. Volatility
+4. Rolling Sharpe Ratio
+Rolling risk-adjusted performance is measured using:
+      Sharpe = {μ/σ} √252
+Rolling windows of 40, 60 and 80 trading days are tested.
+Higher Sharpe receives a higher factor score.
 
-Annualised rolling volatility is calculated from daily returns.
+## Factor Ranking
+Each factor is converted into a cross-sectional percentile score.
 
-\[
-\sigma_{annual}
-=
-\sigma_{daily}\sqrt{252}
-\]
+The four factors receive equal weights:
+      AssetScore = 0.25(BetaScore) + 0.25(MomentumScore) + 0.25(VolatilityScore) + 0.25(Sharpe)
+The three highest-scoring assets are selected.
 
-Lower volatility receives a higher score.
+This produces a systematic asset-selection mechanism rather than manually choosing stocks.
 
----
-
-## 4. Rolling Sharpe Ratio
-
-Rolling risk-adjusted performance is measured as:
-
-\[
-Sharpe =
-\frac{\mu}{\sigma}\sqrt{252}
-\]
-
-Higher Sharpe receives a higher score.
-
----
-
-# Factor Ranking
-
-Each factor is converted into a percentile-based cross-sectional score.
-
-The current specification gives equal weight to the four factors:
-
-\[
-AssetScore =
-0.25(BetaScore)
-+0.25(MomentumScore)
-+0.25(VolatilityScore)
-+0.25(SharpeScore)
-\]
-
-The three highest-scoring assets are selected for portfolio construction.
-
----
-
-# Hyperparameter Optimisation
-
-Rather than assuming that one lookback period is universally optimal, the model evaluates alternative factor windows.
-
-### Parameter grid
+## Hyperparameter Optimisation
+Four factor lookback parameters are tested.
 
 | Factor    | Candidate Windows |
 |-----------|-------------------|
@@ -176,110 +159,133 @@ Rather than assuming that one lookback period is universally optimal, the model 
 | Volatility| 10, 20, 30 days   |
 | Sharpe    | 40, 60, 80 days   |
 
-This produces:
+The total number of combinations is:
+      3 × 3 × 3 × 3 = 81
 
-\[
-3\times3\times3\times3 = 81
-\]
+Each parameter combination:
+- calculates the factor snapshot using optimisation-train data,
+- ranks the candidate assets,
+- selects the top three assets,
+- constructs an equal-weight portfolio,
+- evaluates that portfolio on the validation period.
 
-parameter combinations.
+The parameter combination producing the highest validation Sharpe is identified, but parameter stability is also examined rather than relying exclusively on one maximum value.
 
-Each combination is evaluated using an internal chronological split of the development dataset.
+## Parameter Robustness
+Parameter robustness is investigated through:
+- Validation Sharpe distribution
+- Minimum and maximum validation Sharpe
+- Standard deviation of validation Sharpe
+- Frequency of selected asset combinations
+- Frequency of factor-window values among top-performing configurations
+- Distance from the baseline parameter specification
 
----
+The baseline specification is:
+Beta       = 60 days
+Momentum   = 60 days
+Volatility = 20 days
+Sharpe     = 60 days
 
-# Parameter Stability
+A representative robust configuration is selected based on its proximity to the baseline while remaining among the leading validation solutions.
 
-Parameter sensitivity is assessed by examining:
+This provides a more stable research approach than simply selecting the single configuration with the highest historical validation result.
 
-- validation Sharpe ratios,
-- the range and dispersion of Sharpe ratios,
-- frequency of selected asset combinations,
-- parameter frequencies among configurations producing the leading portfolio,
-- distance from the original baseline specification.
-
-This provides a robustness diagnostic rather than selecting a parameter set solely because it produced the single highest historical score.
-
----
-
-# Portfolio Selection
-
-The factor optimisation repeatedly identified the following three-asset portfolio:
-
+## Selected Asset Portfolio
+The factor-selection process identifies:
 - AAPL
 - GOOG
 - META
+as the three selected assets for subsequent portfolio construction.
 
-This portfolio became the candidate universe for subsequent portfolio-weight optimisation.
+These three assets form the investment set used for the portfolio-weight analysis.
 
----
-
-# Covariance & Correlation Analysis
-
-The development dataset is used to estimate:
-
+## Covariance and Correlation Analysis
+The development data is used to estimate:
 - annualised covariance,
 - pairwise correlation,
 - individual asset volatility,
 - portfolio volatility,
 - diversification effects.
 
-Portfolio variance is calculated as:
+Portfolio variance is:
+      (σ_p)^2=ω^T ∑ω
+and portfolio volatility is:
+      σ_p=√(ω^T ∑ω)
+This is important because portfolio construction depends not only on the expected characteristics of individual assets but also on their interactions.
 
-\[
-\sigma_p^2 =
-w^T\Sigma w
-\]
+## Benchmark Portfolio
+The equal-weight portfolio is used as the primary benchmark for the portfolio construction analysis.
 
-and portfolio volatility as:
+For the three selected assets:
+      ω_B = (1⁄3,1⁄3,1⁄3)
 
-\[
-\sigma_p = \sqrt{w^T\Sigma w}
-\]
+Therefore:
+| Asset | Benchmark Weight |
+|-------|------------------|
+| AAPL  | 33.33%  |
+| GOOG  | 33.33%  |
+| META  | 33.33%  |
 
-This allows the portfolio construction process to consider not only individual asset characteristics but also interactions between assets.
+The equal-weight portfolio provides a transparent and non-optimised benchmark against which the constrained optimisation alternatives can be evaluated.
 
----
+## Constrained Maximum-Sharpe Optimisation
+After selecting AAPL, GOOG and META, portfolio weights are optimised using {scipy.optimize.minimize}.
 
-# Constrained Maximum-Sharpe Optimisation
-
-After selecting AAPL, GOOG and META, portfolio weights are optimised using `scipy.optimize.minimize`.
-
-The objective is:
-
-\[
-\max_w
-\frac{w^T\mu-r_f}
-{\sqrt{w^T\Sigma w}}
-\]
-
+The optimisation maximises the estimated Sharpe ratio:
+      max┬ω⁡〖(ω^T μ - r_f)/√(ω^T ∑ω)〗
 subject to:
-
-\[
-\sum_i w_i=1
-\]
-
+      ∑_i(ω_i) = 1
 and:
-
-\[
-0\leq w_i\leq w_{max}
-\]
+      0 ≤ ω_i ≤ ω_max
 
 Several maximum-weight constraints are tested:
-
 - 33.33%
 - 40%
 - 50%
 - 75%
-- 100%
+- unconstrained 
 
-This demonstrates how portfolio concentration constraints affect the risk-return trade-off.
+The purpose of these constraints is to investigate how portfolio concentration affects the risk-return profile.
 
----
+## Equal Weight vs Constrained Optimisation
+The project deliberately compares two different portfolio-construction approaches.
 
-# Frozen Portfolio Candidates
+# Benchmark
+The benchmark is the simple equal-weight allocation:
+AAPL = 33.33%
+GOOG = 33.33%
+META = 33.33%
 
-Before examining the final test dataset, five portfolio candidates were frozen:
+This allocation requires no optimisation and provides a transparent reference point.
+
+# Alternative Model
+The constrained optimisation framework produces portfolios subject to maximum position limits.
+
+The 40% maximum-weight constraint produced the following allocation:
+AAPL = 40%
+GOOG = 40%
+META = 20%
+This became the preferred constrained alternative because it provides a moderate optimisation solution without allowing the portfolio to become excessively concentrated.
+
+The 40/40/20 portfolio should therefore be interpreted as an alternative model, not as the benchmark.
+
+## Frozen Portfolio Candidates
+Before examining the final unseen test period, the portfolio specifications are frozen.
+
+The candidates include:
+
+|Portfolio |     Description |
+|---------|------------------|
+|Equal Weight | 33.33% / 33.33% / 33.33% benchmark |
+|Max 40 | Constrained alternative |
+|Max 50 | More concentrated constrained alternative |
+|Max 75  | Highly concentrated alternative |
+|Unconstrained | No maximum position constraint |
+
+The exact optimised weights are generated from the development covariance and expected-return estimates.
+No final-test information is used to modify these weights.
+
+The model keeps want to give more weight to GOOG at the expense of META, the out was as follows
 
 | Portfolio    | AAPL | GOOG | META |
 |--------------|---:|---:|---:|
@@ -289,16 +295,13 @@ Before examining the final test dataset, five portfolio candidates were frozen:
 | Max 75       | 25% | 75% | 0% |
 | Unconstrained| 20.42% | 79.58% | 0% |
 
-These portfolios were determined before evaluation on the final unseen dataset.
 
----
+## Final Unseen Out-of-Sample Test
+After the portfolio candidates are frozen, they are evaluated on the final 20% of the historical dataset.
 
-# Final Out-of-Sample Test
+The final test is therefore used only for performance evaluation.
 
-The frozen portfolios are evaluated on the previously unseen final test period.
-
-Performance measures include:
-
+The following metrics are calculated:
 - Total Return
 - Annualised Return
 - Annualised Volatility
@@ -306,56 +309,55 @@ Performance measures include:
 - Maximum Drawdown
 - Final Wealth
 
-### Final OOS Result
+## Key Research Result
+The equal-weight portfolio performed better than the constrained alternatives on the final unseen test period.
 
-The Equal-Weight portfolio was the strongest of the five frozen candidates on the final unseen dataset.
+The important distinction is therefore:
+Equal Weight
+    │
+    └── Best benchmark performance OOS
 
-### Equal-Weight Portfolio
+40/40/20 Constrained Portfolio
+    │
+    └── Preferred alternative model
+        with lower concentration / risk characteristics
+        but weaker OOS performance than equal weight
 
-**AAPL 33.33% / GOOG 33.33% / META 33.33%**
+The result does not imply that optimisation was unsuccessful.
+Instead, it demonstrates an important quantitative-finance finding:
+A more sophisticated optimisation process does not automatically produce superior out-of-sample performance.
 
-Results:
+The equal-weight portfolio provided the stronger final-test result, while the 40/40/20 constrained portfolio provided a more controlled alternative to the more concentrated optimisation solutions.
 
-- Total Return: **5.67%**
-- Annualised Return: **33.56%**
-- Annualised Volatility: **24.76%**
-- Sharpe Ratio: **1.29**
-- Maximum Drawdown: **−12.44%**
+This distinction between performance maximisation and risk-controlled portfolio construction is an important part of the research conclusion.
 
-This is an important result because the equal-weight portfolio was not selected by maximising the final test performance. Its weights were frozen before the unseen test was examined.
-
----
-
-# Transaction-Cost Sensitivity
-
-Transaction costs are incorporated into a daily target-weight rebalancing framework.
-
-The model estimates:
-
-- portfolio turnover,
-- transaction costs,
-- net portfolio returns,
-- volatility,
-- Sharpe ratio,
-- maximum drawdown.
-
-The sensitivity analysis tests:
-
+## Transaction-Cost Sensitivity
+The project includes transaction-cost sensitivity analysis using:
 - 0 bps
 - 10 bps
 - 25 bps
 - 50 bps
 
-This provides a practical check on whether portfolio performance is sensitive to implementation costs.
+The analysis examines how transaction costs affect:
+- net returns,
+- volatility,
+- Sharpe ratio,
+- maximum drawdown,
+- portfolio turnover.
 
----
+Transaction-cost analysis provides an additional implementation check rather than relying solely on gross historical performance.
 
-# Look-Ahead Bias Control
 
-The research process follows chronological information flow:
+# Research Process
+The complete research process can be summarised as:
 
-```text
-Historical Data
+Raw CSV Data
+      │
+      ▼
+Data Cleaning & Alignment
+      │
+      ▼
+80% Development / 20% Final Test
       │
       ▼
 Development Data
@@ -363,14 +365,54 @@ Development Data
       ├── Factor Construction
       ├── Hyperparameter Optimisation
       ├── Asset Selection
-      ├── Covariance Estimation
-      └── Portfolio Optimisation
+      ├── Covariance Analysis
+      └── Portfolio Construction
       │
       ▼
-Freeze Portfolio Candidates
+Equal-Weight Benchmark
+          +
+Constrained Optimisation Alternatives
       │
       ▼
-Final Unseen Test Data
+Freeze Portfolio Specifications
       │
       ▼
-Out-of-Sample Evaluation
+Final Unseen Test
+      │
+      ▼
+Transaction-Cost Sensitivity
+
+## Key Research Lessons
+The project demonstrates several important quantitative-investment principles:
+
+- Asset selection and portfolio weighting are separate decisions.
+- Historical optimisation does not guarantee superior out-of-sample performance.
+- Equal-weight portfolios provide useful transparent benchmarks.
+- Position constraints can reduce concentration.
+- Risk and return must be evaluated jointly.
+- Parameter stability is important when building systematic models.
+- Chronological out-of-sample testing is essential.
+- Transaction costs should be considered when assessing implementability.
+- A simpler model can outperform a more complex optimised model out of sample.
+
+## Technologies
+The project is implemented using:
+- Python
+- NumPy
+- pandas
+- SciPy
+
+Primary techniques include:
+- Time-series analysis
+- Cross-sectional ranking
+- Portfolio mathematics
+- Covariance analysis
+- Constrained numerical optimisation
+- Risk measurement
+- Out-of-sample validation
+
+## Disclaimer
+This project is for quantitative research, educational, and portfolio demonstration purposes only.
+It does not constitute investment advice or a recommendation to buy or sell any security.
+
+---
