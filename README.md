@@ -211,15 +211,15 @@ The development period is further divided into:
 The validation period is used for hyperparameter selection.
 
 This produces the following research structure:
-Historical Data
-      │
-      ├── 80% Development
-      │      │
-      │      ├── 80% Optimization Train
-      │      │
-      │      └── 20% Validation
-      │
-      └── 20% Final Unseen Test
+ │Historical Data │
+   │    │ │
+    │   ├── 80% Development │
+    │   │      │ │
+     │  │      ├── 80% Optimization Train │
+      │ │      │ │
+      │ │      └── 20% Validation │
+     │  │ │
+     │  └── 20% Final Unseen Test │
       
 The final test is therefore used only for final model evaluation.
 
