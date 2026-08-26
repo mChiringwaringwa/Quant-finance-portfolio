@@ -301,32 +301,33 @@ The project demonstrates how a portfolio performance can be evaluated from both 
 ---
 
 The final division is becomes very clean Work
-                              Project 01            Project 02
-Raw CSV loading                  ✓                    —
-Data cleaning/alignment          ✓                    —
-Processed data                   ✓                    Reads
-Factor construction              ✓                    —
-Beta                             ✓                    —
-Momentum                         ✓                    —
-Volatility                       ✓                    —
-Sharpe factor                    ✓                    —
-Factor ranking                   ✓                    —
-Asset selection                  ✓                    —
-Hyperparameter optimisation      ✓                    —
-Parameter robustness             ✓                    —
-Covariance for construction      ✓                    —
-Constrained optimisation         ✓                    —
-Equal-weight benchmark           ✓                    Reads
-40/40/20 alternative             ✓                    Reads
-Freeze portfolios                ✓                    Reads
-Final OOS test                   ✓                    Uses
-Transaction-cost sensitivity     ✓                    —
-Active return                    —                    ✓
-Active weights                   —                    ✓
-Tracking error                   —                    ✓
-Information ratio                —                    ✓
-Risk contribution                —                    ✓
-Performance attribution          —                    ✓
+|               | Project 01 |   Project 02|
+|-----------|-------------------|-----------------|
+|Raw CSV loading     |             ✓     |               —|
+|Data cleaning/alignment |         ✓    |                —|
+|Processed data         |          ✓    |                Reads|
+|Factor construction     |         ✓    |                —|
+|Beta                   |          ✓   |                 —|
+|Momentum               |          ✓   |                 —|
+|Volatility             |          ✓  |                  —|
+|Sharpe factor          |          ✓  |                  —|
+|Factor ranking         |          ✓   |                 —|
+|Asset selection        |          ✓  |                  —|
+|Hyperparameter optimisation|      ✓  |                  —|
+|Parameter robustness    |         ✓  |                  —|
+|Covariance for construction|      ✓   |                 —|
+|Constrained optimisation  |       ✓   |                 —|
+|Equal-weight benchmark  |         ✓   |                 Reads|
+|40/40/20 alternative |            ✓   |                 Reads|
+|Freeze portfolios   |             ✓   |                 Reads|
+|Final OOS test      |             ✓  |                  Uses|
+|Transaction-cost sensitivity |    ✓  |                  —|
+|Active return   |                 —   |                 ✓|
+|Active weights   |                —   |                 ✓|
+|Tracking error    |               —   |                 ✓|
+|Information ratio   |             —  |                  ✓|
+|Risk contribution    |            —   |                 ✓|
+|Performance attribution |         —   |                 ✓|
 
 ---
 ## Research Interpretation
