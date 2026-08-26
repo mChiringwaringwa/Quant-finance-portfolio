@@ -253,54 +253,6 @@ Project 01:
 
 This makes the research workflow more reproducible and prevents downstream projects from unnecessarily re-downloading the same historical data.
 
-PROJECT 01
-Raw data
-   ↓
-Clean/aligned data
-   ↓
-Factor construction
-   ↓
-Factor ranking
-   ↓
-Asset selection
-   ↓
-Hyperparameter optimisation
-   ↓
-Robustness / parameter stability
-   ↓
-Select 3 assets
-   ↓
-Covariance analysis
-   ↓
-Constrained portfolio optimisation
-   ↓
-Equal-weight benchmark
-   ↓
-Constrained 40/40/20 alternative
-   ↓
-Freeze portfolios
-   ↓
-Final OOS test
-   ↓
-Transaction-cost sensitivity
-   ↓
-SAVE CLEAN OUTPUTS
-          │
-          ▼
-PROJECT 02
-          │
-          ├── Equal-weight portfolio
-          └── 40/40/20 constrained portfolio
-                    ↓
-          Risk & Performance Analytics
-                    ↓
-          Active return
-          Active weights
-          Tracking error
-          Information ratio
-          Risk contribution
-          Performance attribution
-
 # Technologies
 The projects are implemented primarily using:
 - Python
@@ -348,6 +300,35 @@ The project demonstrates how a portfolio performance can be evaluated from both 
 
 ---
 
+The final division is becomes very clean Work
+                              Project 01            Project 02
+Raw CSV loading                  ✓                    —
+Data cleaning/alignment          ✓                    —
+Processed data                   ✓                    Reads
+Factor construction              ✓                    —
+Beta                             ✓                    —
+Momentum                         ✓                    —
+Volatility                       ✓                    —
+Sharpe factor                    ✓                    —
+Factor ranking                   ✓                    —
+Asset selection                  ✓                    —
+Hyperparameter optimisation      ✓                    —
+Parameter robustness             ✓                    —
+Covariance for construction      ✓                    —
+Constrained optimisation         ✓                    —
+Equal-weight benchmark           ✓                    Reads
+40/40/20 alternative             ✓                    Reads
+Freeze portfolios                ✓                    Reads
+Final OOS test                   ✓                    Uses
+Transaction-cost sensitivity     ✓                    —
+Active return                    —                    ✓
+Active weights                   —                    ✓
+Tracking error                   —                    ✓
+Information ratio                —                    ✓
+Risk contribution                —                    ✓
+Performance attribution          —                    ✓
+
+---
 ## Research Interpretation
 An important principle demonstrated by these projects is that model complexity does not automatically translate into superior investment performance.
 
