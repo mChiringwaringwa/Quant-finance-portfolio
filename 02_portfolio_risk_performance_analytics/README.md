@@ -1,14 +1,14 @@
 # Project 02 — Portfolio Risk & Performance Analytics
 
 ## Objective
-This project evaluates a constrained equity portfolio against an
-equal-weight benchmark using portfolio performance, risk decomposition,
-active return analysis, tracking error, information ratio, and
-performance attribution.
+Evaluate the risk and benchmark-relative performance of the constrained
+40/40/20 portfolio developed in Project 01.
 
-The analysis investigates whether imposing a maximum 40% allocation
-constraint provides a more risk-controlled portfolio relative to an
-equal-weight benchmark.
+Project 01 established the selected asset universe and produced two portfolio specifications: an equal-weight benchmark and a constrained 40/40/20 alternative.
+
+Project 02 takes these frozen portfolios as inputs and performs detailed risk, benchmark-relative performance, attribution, and implementation analysis.
+
+The 40/40/20 portfolio was selected as the constrained alternative model, while the-weight portfolio served as the transparent benchmark.
 
 ---
 
@@ -29,49 +29,105 @@ The benchmark is an equal-weight portfolio:
 
 ---
 
-## Data
-
-- Assets: AAPL, MSFT, NVDA, GOOG, META
-- Final portfolio universe: AAPL, GOOG, META
-- Data source: Yahoo Finance
-- Frequency: Daily
-- Period: 16 July 2025 – 15 July 2026
-- Adjusted closing prices used for return calculations
-
----
-
 ## Methodology
 The analysis includes:
 
-1. Daily return calculation
-2. Portfolio return calculation
-3. Equal-weight benchmark construction
-4. Volatility estimation
-5. Sharpe ratio
-6. Maximum drawdown
-7. Covariance and correlation analysis
-8. Portfolio risk contribution
-9. Active return analysis
-10. Active weight decomposition
-11. Tracking error
-12. Information ratio
-13. Performance attribution
-14. Transaction-cost sensitivity
+1. Portfolio risk contribution
+2. Active return analysis
+3. Active weight decomposition
+4. Tracking error
+5. Information ratio
+6. Performance attribution
 
 ---
+# Why Compare Equal Weight and 40/40/20?
 
-## Active Portfolio Analysis
-Relative to the equal-weight benchmark, the maximum 40% portfolio
-held:
+The purpose is not to assume that optimisation must outperform equal weighting.
 
-| Asset | Active Weight |
-|-------|---------------|
-| AAPL  | +6.67%        |
-| GOOG  | +6.67%        |
-| META  | -13.33%       |
+Instead, the analysis asks two separate questions:
+
+### Question 1
+
+Does the constrained optimisation model improve investment performance?
+
+### Question 2
+
+Does the constrained model provide a more controlled risk profile?
+
+The final unseen test showed that the equal-weight benchmark produced stronger
+performance than the 40/40/20 alternative.
+
+However, the constrained portfolio provides a less concentrated alternative
+to more aggressive optimisation solutions.
+
+This highlights an important quantitative-finance principle:
+
+> Optimisation should be evaluated on both return and risk, particularly on
+> genuinely unseen data.
+
+## Benchmark-Relative Performance
+The 40/40/20 portfolio is compared with the equal-weight benchmark.
+
+Active return is:
+      R_(A,t) = R_(P,t) - R_(B,t)
+where:
+(R_P) = constrained portfolio return
+(R_B) = equal-weight benchmark return
+
+Active weights are:
+(ActiveWeight)_i=ω_(P,i) - ω_(B,i)
+
+For the 40/40/20 portfolio:
+
+|Asset | Portfolio | Benchmark  | Active Weight |
+|-----|---:|---:|---:|
+|AAPL | 40.00% | 33.33% | +6.67% |
+|GOOG | 40.00% | 33.33% | +6.67% |
+|META | 20.00% | 33.33% |−13.33% |
+
+The active weights sum to zero.
 
 The portfolio therefore represented an overweight to AAPL and GOOG
 and an underweight to META.
+
+## Tracking Error
+Tracking error measures the volatility of active returns:
+      (TE)_daily=Std(R_P-R_B )
+
+Annualised tracking error is:
+      (TE)_annual=(TE)_daily √252
+
+This measures how much the alternative portfolio deviates from the equal-weight benchmark.
+
+## Information Ratio
+
+The Information Ratio evaluates active return relative to active risk:
+      IR=(Annualised Active Return)/(Annualised Tracking Error)
+This provides a benchmark-relative assessment of whether active risk generated positive excess performance.
+
+## Portfolio Risk Contribution
+Portfolio risk is decomposed into asset-level contributions.
+
+Portfolio variance:
+      (σ_p)^2 = ω^T ∑ω
+
+Marginal risk contribution:
+(MRC)_i = (∑ω)_i /σ_P 
+
+Component risk contribution:
+(CRC)_i = ω_i (MRC)_i
+
+Percentage contribution:
+(RC)_i={(CRC)_i /σ_P} ×100
+
+This distinguishes between capital allocation and risk allocation.
+An asset with a smaller portfolio weight can still contribute substantially to portfolio risk because of its volatility and covariance relationships with the other assets.
+
+## Performance Attribution
+Active performance is also examined through the active portfolio weights and asset returns.
+
+The analysis identifies which active positions contributed positively or negatively relative to the equal-weight benchmark.
+This provides an additional explanation of the final out-of-sample result.
 
 ---
 
@@ -126,21 +182,32 @@ performance, while the overweight to AAPL generated a positive
 contribution.
 
 ---
+# Risk and Performance Framework
 
-## Transaction Cost Sensitivity
+The project follows the framework:
 
-The equal-weight benchmark remained relatively robust under different
-transaction-cost assumptions:
-
-| Transaction Cost | Total Return | Sharpe |
-|------------------|--------------|--------|
-| 0 bps            | 5.67%        | 1.2905 |
-| 10 bps           | 5.64%        | 1.2846 |
-| 25 bps           | 5.59%        | 1.2758 |
-| 50 bps           | 5.52%        | 1.2610 |
-
-Transaction costs reduced performance gradually but did not materially
-alter the overall conclusion.
+40/40/20 Portfolio
+        │
+        ├── Absolute Performance
+        │      ├── Return
+        │      ├── Volatility
+        │      ├── Sharpe
+        │      └── Drawdown
+        │
+        ├── Benchmark Comparison
+        │      ├── Active Return
+        │      ├── Active Weights
+        │      ├── Tracking Error
+        │      └── Information Ratio
+        │
+        ├── Risk Decomposition
+        │      ├── Covariance
+        │      ├── Marginal Risk Contribution
+        │      ├── Component Risk Contribution
+        │      └── Percentage Risk Contribution
+        │
+        ├── Performance Attribution
+              └── Asset-Level Active Contributions
 
 ---
 
