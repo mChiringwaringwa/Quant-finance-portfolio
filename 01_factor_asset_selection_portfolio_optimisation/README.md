@@ -347,6 +347,18 @@ The analysis examines how transaction costs affect:
 
 Transaction-cost analysis provides an additional implementation check rather than relying solely on gross historical performance.
 
+The equal-weight benchmark remained relatively robust under different
+transaction-cost assumptions:
+
+| Transaction Cost | Total Return | Sharpe |
+|------------------|--------------|--------|
+| 0 bps            | 5.67%        | 1.2905 |
+| 10 bps           | 5.64%        | 1.2846 |
+| 25 bps           | 5.59%        | 1.2758 |
+| 50 bps           | 5.52%        | 1.2610 |
+
+Transaction costs reduced performance gradually but did not materially
+alter the overall conclusion.
 
 # Research Process
 The complete research process can be summarised as:
