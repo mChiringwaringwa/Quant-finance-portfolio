@@ -9,19 +9,37 @@
 # construction framework.
 #
 # The project:
-#   1. Cleans and aligns market data
-#   2. Constructs quantitative factors
-#   3. Ranks and selects assets
-#   4. Optimizes factor lookback parameters
-#   5. Tests parameter robustness
-#   6. Selects a final three-asset universe
-#   7. Performs constrained portfolio optimization
-#   8. Uses equal weight as a benchmark
-#   9. Uses the Max-40 constrained portfolio as the alternative
-#  10. Freezes the portfolio specifications
-#  11. Tests them on a genuinely unseen period
-#  12. Performs transaction-cost sensitivity
-#  13. Saves reusable outputs for Project 02
+#   1. Loads and cleans markert data
+#   2. Aligns the asset universe
+#   3. Constructs quantitative factors
+#   4. Ranks and selects assets
+#   5. Optimizes factor lookback parameters
+#   6. Tests parameter robustness
+#   7. Selects a final three-asset universe
+#   8. Performs constrained portfolio optimization
+#   9. Uses equal weight as a benchmark
+#   10. Uses the Max-40 constrained portfolio as the alternative
+#  11. Freezes the portfolio specifications
+#  12. Tests them on a genuinely unseen period
+#  13. Performs transaction-cost sensitivity
+#  14. Saves reusable outputs for Project 02
+#
+# IMPORTANT
+# ------------------------------------------------------------
+# Project 01 ends here.
+#
+# Benchmark-relative risk/performance attribution such as:
+#   - Active return
+#   - Active weights
+#   - Tracking error
+#   - Information ratio
+#   - Risk contribution
+#   - Performance attribution
+#
+# belongs to PROJECT 02.
+#
+# ============================================================
+
 
 # ============================================================
 # 1. IMPORT LIBRARIES
@@ -35,9 +53,9 @@ import pandas as pd
 from scipy.optimize import minimize
 
 
-# ============================================================
+# ==================================
 # 2. PROJECT SETTINGS
-# ============================================================
+# ==================================
 
 ASSETS = [
     "AAPL",
@@ -66,24 +84,53 @@ TRANSACTION_COSTS = [
     0.0050      # 50 bps
 ]
 
+# ==================================
+# 3. DATA AND OUTPUT PATHS — GITHUB
+# ==================================
 
-# ============================================================
-# 3. DATA AND OUTPUT PATHS
-# ============================================================
+from pathlib import Path
 
-DATA_PATH = "../data"
+# Folder containing this Python script
+PROJECT_PATH = Path(__file__).resolve().parent
 
-OUTPUT_PATH = "../outputs"
+# Project data folder
+DATA_PATH = PROJECT_PATH / "data"
 
-os.makedirs(
-    OUTPUT_PATH,
+# Project output folder
+OUTPUT_PATH = PROJECT_PATH / "outputs"
+
+# Create outputs folder if it does not exist
+OUTPUT_PATH.mkdir(
+    parents=True,
     exist_ok=True
 )
+# --------------------------------------------------------
+# PATH CHECK
+# --------------------------------------------------------
 
+print("=" * 60)
+print("PROJECT PATH CHECK")
+print("=" * 60)
 
-# ============================================================
+print("\nProject path:")
+print(PROJECT_PATH)
+
+print("\nData path:")
+print(DATA_PATH)
+
+print("\nOutput path:")
+print(OUTPUT_PATH)
+
+print("\nData directory exists:")
+print(DATA_PATH.exists())
+
+print("\nAAPL.csv exists:")
+print(
+    (DATA_PATH / "AAPL.csv").exists()
+)
+# ==================================
 # 4. LOAD PRICE CSV
-# ============================================================
+# ==================================
 
 def load_price_csv(
     ticker,
@@ -171,12 +218,12 @@ def load_price_csv(
     return prices
 
 
-# ============================================================
+# ==================================
 # 5. LOAD ALL MARKET DATA
-# ============================================================
+# ==================================
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -184,7 +231,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 
@@ -208,9 +255,9 @@ for ticker in all_tickers:
     )
 
 
-# ============================================================
+# ==================================
 # 6. ALIGN ASSET UNIVERSE
-# ============================================================
+# ==================================
 
 asset_universe = (
     pd.concat(
@@ -248,15 +295,15 @@ print(
 )
 
 
-# ============================================================
+# ==================================
 # 7. SAVE CLEANED PRICE DATA
-# ============================================================
+# ==================================
 #
 # This is the first reusable output from Project 01.
 #
 # Project 02 will read this file instead of loading and
 # cleaning the original raw CSV files.
-# ============================================================
+# ==================================
 
 processed_prices_path = os.path.join(
     OUTPUT_PATH,
@@ -273,9 +320,9 @@ print(
 )
 
 
-# ============================================================
+# ==================================
 # 8. CALCULATE RETURNS
-# ============================================================
+# =================================
 
 returns = (
     asset_universe
@@ -284,15 +331,15 @@ returns = (
 )
 
 
-# ============================================================
+# ==================================
 # 9. OUTER DEVELOPMENT / FINAL TEST SPLIT
-# ============================================================
+# ==================================
 #
 # 80% Development
 # 20% Final Unseen Test
 #
 # The final test period is not used during model development.
-# ============================================================
+# ==================================
 
 split_index = int(
     len(asset_universe)
@@ -315,7 +362,7 @@ final_test_df = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -323,7 +370,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -366,9 +413,9 @@ print(
 )
 
 
-# ============================================================
+# ==================================
 # 10. CHRONOLOGY CHECK
-# ============================================================
+# ==================================
 
 development_end = (
     development_df.index.max()
@@ -394,9 +441,9 @@ print(
 )
 
 
-# ============================================================
+# ==================================
 # 11. FACTOR SNAPSHOT FUNCTION
-# ============================================================
+# ==================================
 
 def calculate_factor_snapshot(
     price_df,
@@ -636,7 +683,7 @@ development_ranking, development_selected_assets = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -644,7 +691,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -724,7 +771,7 @@ optimization_validation_df = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -732,7 +779,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -1086,7 +1133,7 @@ final_development_ranking, selected_assets = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -1094,7 +1141,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -1406,7 +1453,7 @@ constrained_results_df = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -1414,7 +1461,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -1462,7 +1509,7 @@ max40_weights = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -1470,7 +1517,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 
@@ -1739,7 +1786,7 @@ final_results_df = (
 # ============================================================
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -1747,7 +1794,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -1941,7 +1988,7 @@ transaction_cost_df = (
 
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -1949,7 +1996,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
@@ -2103,7 +2150,7 @@ model_summary.to_csv(
 # ============================================================
 
 print(
-    "\n" + "=" * 70
+    "\n" + "=" * 60
 )
 
 print(
@@ -2111,7 +2158,7 @@ print(
 )
 
 print(
-    "=" * 70
+    "=" * 60
 )
 
 print(
