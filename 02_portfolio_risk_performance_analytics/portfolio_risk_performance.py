@@ -17,8 +17,10 @@
 #   - calculate factors
 #   - optimize parameters
 #   - optimize portfolio weights
+#   - generate trading signals
+#   - perform short-term trading
 #
-# It consumes the outputs of Project 01 and performs:
+# Project 02 consumes the outputs of Project 01 and performs:
 #
 #   - Portfolio performance analysis
 #   - Active return analysis
@@ -27,6 +29,13 @@
 #   - Information ratio
 #   - Portfolio risk contribution
 #   - Performance attribution
+#   - Historical Value at Risk (VaR)
+#   - Expected Shortfall (ES)
+#
+# The purpose of Project 02 is to answer:
+#
+#   "How does the Project 01 portfolio behave as a
+#    long-term investment, in terms of return and risk?"
 #
 # ============================================================
 
@@ -48,6 +57,8 @@ import pandas as pd
 TRADING_DAYS = 252
 
 RISK_FREE_RATE = 0.0
+
+VAR_CONFIDENCE = 0.95
 
 
 # ============================================================
@@ -89,12 +100,10 @@ DATA_PATH = os.path.join(
     "data"
 )
 
-
 PROJECT_02_OUTPUT = os.path.join(
     PROJECT_PATH,
     "outputs"
 )
-
 
 os.makedirs(
     PROJECT_02_OUTPUT,
@@ -118,18 +127,15 @@ PROCESSED_PRICES_FILE = os.path.join(
     "processed_prices.csv"
 )
 
-
 FINAL_TEST_RETURNS_FILE = os.path.join(
     DATA_PATH,
     "final_test_returns.csv"
 )
 
-
 FROZEN_PORTFOLIOS_FILE = os.path.join(
     DATA_PATH,
     "frozen_portfolios.csv"
 )
-
 
 FINAL_OOS_RESULTS_FILE = os.path.join(
     DATA_PATH,
@@ -150,7 +156,6 @@ required_files = [
     FROZEN_PORTFOLIOS_FILE,
 
     FINAL_OOS_RESULTS_FILE
-
 ]
 
 
@@ -229,7 +234,6 @@ processed_prices = pd.read_csv(
     index_col=0,
 
     parse_dates=True
-
 )
 
 
@@ -244,6 +248,7 @@ print(
 print(
     "=" * 70
 )
+
 
 print(
     "\nProcessed prices loaded:"
@@ -260,6 +265,9 @@ print(
 #
 # These are the returns of the selected assets during the
 # genuinely unseen test period identified by Project 01.
+#
+# Project 02 uses this period to evaluate the frozen
+# portfolios without re-estimating their weights.
 # ============================================================
 
 final_test_returns = pd.read_csv(
@@ -269,7 +277,6 @@ final_test_returns = pd.read_csv(
     index_col=0,
 
     parse_dates=True
-
 )
 
 
@@ -296,13 +303,17 @@ print(
 # ============================================================
 # 9. LOAD FROZEN PORTFOLIOS
 # ============================================================
+#
+# These portfolio weights originate from Project 01.
+#
+# Project 02 does not modify them.
+# ============================================================
 
 frozen_portfolios = pd.read_csv(
 
     FROZEN_PORTFOLIOS_FILE,
 
     index_col=0
-
 )
 
 
@@ -326,7 +337,6 @@ print(
 project_01_oos_results = pd.read_csv(
 
     FINAL_OOS_RESULTS_FILE
-
 )
 
 
@@ -348,7 +358,6 @@ required_portfolios = [
     "Equal_Weight",
 
     "Max_40"
-
 ]
 
 
@@ -362,15 +371,21 @@ for portfolio in required_portfolios:
 
 
 benchmark_weights = (
+
     frozen_portfolios
+
     .loc["Equal_Weight"]
+
     .astype(float)
 )
 
 
 alternative_weights = (
+
     frozen_portfolios
+
     .loc["Max_40"]
+
     .astype(float)
 )
 
@@ -380,7 +395,9 @@ alternative_weights = (
 # ============================================================
 
 common_assets = (
+
     final_test_returns.columns
+
     .intersection(
         benchmark_weights.index
     )
@@ -396,6 +413,7 @@ if len(common_assets) == 0:
 
 
 final_test_returns = (
+
     final_test_returns[
         common_assets
     ]
@@ -403,6 +421,7 @@ final_test_returns = (
 
 
 benchmark_weights = (
+
     benchmark_weights[
         common_assets
     ]
@@ -410,6 +429,7 @@ benchmark_weights = (
 
 
 alternative_weights = (
+
     alternative_weights[
         common_assets
     ]
@@ -480,6 +500,16 @@ print(
 # ============================================================
 # 14. PORTFOLIO RETURNS
 # ============================================================
+#
+# Portfolio return:
+#
+#       R_p,t = Σ w_i R_i,t
+#
+# implemented using:
+#
+#       returns.dot(weights)
+#
+# ============================================================
 
 benchmark_returns = (
 
@@ -488,7 +518,6 @@ benchmark_returns = (
     .dot(
         benchmark_weights
     )
-
 )
 
 
@@ -499,7 +528,6 @@ alternative_returns = (
     .dot(
         alternative_weights
     )
-
 )
 
 
@@ -516,7 +544,9 @@ def evaluate_portfolio(
     """
 
     portfolio_returns = (
+
         portfolio_returns
+
         .dropna()
     )
 
@@ -524,10 +554,10 @@ def evaluate_portfolio(
     total_return = (
 
         (1 + portfolio_returns)
+
         .prod()
 
         - 1
-
     )
 
 
@@ -538,12 +568,12 @@ def evaluate_portfolio(
         ** (
 
             TRADING_DAYS
-            / len(portfolio_returns)
+            /
+            len(portfolio_returns)
 
         )
 
         - 1
-
     )
 
 
@@ -551,10 +581,10 @@ def evaluate_portfolio(
 
         portfolio_returns.std()
 
-        * np.sqrt(
+        *
+        np.sqrt(
             TRADING_DAYS
         )
-
     )
 
 
@@ -563,7 +593,8 @@ def evaluate_portfolio(
         sharpe = (
 
             annualized_return
-            - RISK_FREE_RATE
+            -
+            RISK_FREE_RATE
 
         ) / annualized_volatility
 
@@ -582,18 +613,18 @@ def evaluate_portfolio(
     drawdown = (
 
         wealth
+
         /
+
         wealth.cummax()
 
         - 1
-
     )
 
 
     maximum_drawdown = (
 
         drawdown.min()
-
     )
 
 
@@ -616,7 +647,6 @@ def evaluate_portfolio(
 
         "Final_Wealth":
             wealth.iloc[-1]
-
     }
 
 
@@ -629,9 +659,7 @@ benchmark_metrics = (
     evaluate_portfolio(
 
         benchmark_returns
-
     )
-
 )
 
 
@@ -640,9 +668,7 @@ alternative_metrics = (
     evaluate_portfolio(
 
         alternative_returns
-
     )
-
 )
 
 
@@ -669,7 +695,6 @@ performance_comparison = pd.DataFrame(
         }
 
     ]
-
 )
 
 
@@ -694,40 +719,49 @@ print(
 # 17. ACTIVE RETURN
 # ============================================================
 #
-# Active return:
+# Daily active return:
 #
-#       R_A = R_P - R_B
+#       R_A,t = R_P,t - R_B,t
 #
 # where:
 #
-#       R_P = alternative portfolio return
-#       R_B = equal-weight benchmark return
+#       R_P,t = alternative portfolio return
+#       R_B,t = equal-weight benchmark return
+#
 # ============================================================
 
 active_returns = (
 
     alternative_returns
-    - benchmark_returns
 
+    -
+
+    benchmark_returns
 )
 
 
 active_total_return = (
 
     (1 + active_returns)
+
     .prod()
 
     - 1
-
 )
 
 
-annualized_active_return = (
+# Arithmetic annualised active return
+#
+# This is the annualised mean daily active return.
+# It is used with annualised tracking error for the
+# Information Ratio.
+
+annualized_arithmetic_active_return = (
 
     active_returns.mean()
 
-    * TRADING_DAYS
-
+    *
+    TRADING_DAYS
 )
 
 
@@ -757,26 +791,38 @@ print(
 
 
 print(
-    "Active return:",
+    "Active total return:",
     active_total_return
 )
 
 
 print(
-    "Annualized active return:",
-    annualized_active_return
+    "Annualized arithmetic active return:",
+    annualized_arithmetic_active_return
 )
 
 
 # ============================================================
 # 18. ACTIVE WEIGHTS
 # ============================================================
+#
+# Active weight:
+#
+#       Active Weight_i
+#       =
+#       Alternative Weight_i
+#       -
+#       Benchmark Weight_i
+#
+# ============================================================
 
 active_weights = (
 
     alternative_weights
-    - benchmark_weights
 
+    -
+
+    benchmark_weights
 )
 
 
@@ -790,7 +836,6 @@ active_weight_table = pd.DataFrame({
 
     "Active_Weight":
         active_weights
-
 })
 
 
@@ -805,6 +850,7 @@ print(
 print(
     "=" * 70
 )
+
 
 print(
     active_weight_table
@@ -821,13 +867,17 @@ print(
 # 19. TRACKING ERROR
 # ============================================================
 #
-# Tracking error is the standard deviation of active returns.
+# Tracking Error is the standard deviation of active returns.
+#
+#       TE_daily = std(R_A)
+#
+#       TE_annual = TE_daily × sqrt(252)
+#
 # ============================================================
 
 daily_tracking_error = (
 
     active_returns.std()
-
 )
 
 
@@ -835,10 +885,10 @@ annualized_tracking_error = (
 
     daily_tracking_error
 
-    * np.sqrt(
+    *
+    np.sqrt(
         TRADING_DAYS
     )
-
 )
 
 
@@ -871,16 +921,23 @@ print(
 # 20. INFORMATION RATIO
 # ============================================================
 #
-# IR = Annualized Active Return / Annualized Tracking Error
+#       IR =
+#
+#       Annualised Active Return
+#       ------------------------
+#       Annualised Tracking Error
+#
 # ============================================================
 
 if annualized_tracking_error != 0:
 
     information_ratio = (
 
-        annualized_active_return
-        / annualized_tracking_error
+        annualized_arithmetic_active_return
 
+        /
+
+        annualized_tracking_error
     )
 
 else:
@@ -913,15 +970,21 @@ print(
 #
 # Project 02 calculates risk characteristics using the final
 # unseen period.
+#
+# Annualised covariance:
+#
+#       Σ_annual = Σ_daily × 252
+#
 # ============================================================
 
 oos_covariance = (
 
     final_test_returns
+
     .cov()
 
-    * TRADING_DAYS
-
+    *
+    TRADING_DAYS
 )
 
 
@@ -937,6 +1000,7 @@ print(
     "=" * 70
 )
 
+
 print(
     oos_covariance
 )
@@ -945,18 +1009,34 @@ print(
 # ============================================================
 # 22. ALTERNATIVE PORTFOLIO RISK CONTRIBUTION
 # ============================================================
+#
+# Portfolio variance:
+#
+#       σ_p² = w'Σw
+#
+# Portfolio volatility:
+#
+#       σ_p = sqrt(w'Σw)
+#
+# Marginal Risk Contribution:
+#
+#       MRC_i = (Σw)_i / σ_p
+#
+# Component Risk Contribution:
+#
+#       CRC_i = w_i × MRC_i
+#
+# ============================================================
 
 alternative_weight_array = (
 
     alternative_weights.values
-
 )
 
 
 covariance_matrix = (
 
     oos_covariance.values
-
 )
 
 
@@ -964,10 +1044,13 @@ portfolio_variance = (
 
     alternative_weight_array
 
-    @ covariance_matrix
+    @
 
-    @ alternative_weight_array
+    covariance_matrix
 
+    @
+
+    alternative_weight_array
 )
 
 
@@ -976,7 +1059,6 @@ portfolio_volatility = (
     np.sqrt(
         portfolio_variance
     )
-
 )
 
 
@@ -984,8 +1066,9 @@ sigma_w = (
 
     covariance_matrix
 
-    @ alternative_weight_array
+    @
 
+    alternative_weight_array
 )
 
 
@@ -993,8 +1076,9 @@ marginal_risk_contribution = (
 
     sigma_w
 
-    / portfolio_volatility
+    /
 
+    portfolio_volatility
 )
 
 
@@ -1002,8 +1086,9 @@ component_risk_contribution = (
 
     alternative_weight_array
 
-    * marginal_risk_contribution
+    *
 
+    marginal_risk_contribution
 )
 
 
@@ -1011,8 +1096,9 @@ risk_contribution_percentage = (
 
     component_risk_contribution
 
-    / portfolio_volatility
+    /
 
+    portfolio_volatility
 )
 
 
@@ -1029,13 +1115,10 @@ risk_contribution = pd.DataFrame({
 
     "Risk_Contribution_%":
         risk_contribution_percentage
-        * 100
+        *
+        100
 
-},
-
-index=common_assets
-
-)
+}, index=common_assets)
 
 
 print(
@@ -1066,12 +1149,18 @@ print(
 # 23. PERFORMANCE ATTRIBUTION
 # ============================================================
 #
-# Active contribution:
+# Simplified cumulative active contribution:
 #
-#       Active Weight × Asset Return
+#       Active Contribution_i
+#       =
+#       Active Weight_i × Asset Return_i
 #
-# This explains which active positions helped or hurt relative
-# to the equal-weight benchmark.
+# This provides an intuitive decomposition of active
+# performance.
+#
+# Daily attribution is used as the primary attribution
+# framework because daily active contributions aggregate
+# naturally through time.
 # ============================================================
 
 asset_oos_returns = (
@@ -1079,6 +1168,7 @@ asset_oos_returns = (
     (
 
         final_test_returns
+
         + 1
 
     )
@@ -1086,7 +1176,6 @@ asset_oos_returns = (
     .prod()
 
     - 1
-
 )
 
 
@@ -1094,8 +1183,9 @@ active_contribution = (
 
     active_weights
 
-    * asset_oos_returns
+    *
 
+    asset_oos_returns
 )
 
 
@@ -1115,7 +1205,6 @@ performance_attribution = pd.DataFrame({
 
     "Active_Contribution":
         active_contribution
-
 })
 
 
@@ -1138,19 +1227,29 @@ print(
 
 
 print(
-    "\nSum of active contributions:",
+    "\nSum of simplified active contributions:",
     active_contribution.sum()
 )
 
 
 print(
-    "Actual active return:",
+    "Actual compounded active return:",
     active_total_return
 )
 
 
 # ============================================================
 # 24. DAILY PERFORMANCE ATTRIBUTION
+# ============================================================
+#
+# Daily active contribution:
+#
+#       AC_i,t = Active Weight_i × Asset Return_i,t
+#
+# Total daily active return:
+#
+#       AR_t = Σ AC_i,t
+#
 # ============================================================
 
 daily_active_contribution = (
@@ -1164,7 +1263,6 @@ daily_active_contribution = (
         axis=1
 
     )
-
 )
 
 
@@ -1175,14 +1273,274 @@ daily_active_contribution[
     daily_active_contribution
 
     .sum(
-        axis=1
-    )
 
+        axis=1
+
+    )
 )
 
 
 # ============================================================
-# 25. CREATE BENCHMARK VS ALTERNATIVE RETURN SERIES
+# 25. HISTORICAL VALUE AT RISK
+# ============================================================
+#
+# Historical VaR estimates the return threshold associated
+# with the lower tail of the historical return distribution.
+#
+# For a 95% confidence level:
+#
+#       VaR threshold = 5th percentile of returns
+#
+# Example:
+#
+#       VaR = -0.025
+#
+# means the 5th percentile historical daily return was -2.5%.
+#
+# IMPORTANT:
+#
+# The value is expressed as a RETURN, so negative values
+# represent losses.
+# ============================================================
+
+def historical_var(
+
+    portfolio_returns,
+
+    confidence=VAR_CONFIDENCE
+
+):
+
+    """
+    Calculate historical Value at Risk as a return threshold.
+
+    A 95% VaR corresponds to the 5th percentile of returns.
+    """
+
+    portfolio_returns = (
+
+        portfolio_returns
+
+        .dropna()
+    )
+
+
+    var = (
+
+        portfolio_returns
+
+        .quantile(
+            1 - confidence
+        )
+    )
+
+
+    return var
+
+
+# ============================================================
+# 26. EXPECTED SHORTFALL
+# ============================================================
+#
+# Expected Shortfall measures the average return in the
+# worst tail beyond the VaR threshold.
+#
+# For 95% confidence:
+#
+#       ES = mean(returns <= VaR)
+#
+# Therefore ES should normally be equal to or more negative
+# than VaR.
+# ============================================================
+
+def historical_es(
+
+    portfolio_returns,
+
+    confidence=VAR_CONFIDENCE
+
+):
+
+    """
+    Calculate historical Expected Shortfall.
+
+    ES is the average portfolio return in observations
+    that are at or below the historical VaR threshold.
+    """
+
+    portfolio_returns = (
+
+        portfolio_returns
+
+        .dropna()
+    )
+
+
+    var = historical_var(
+
+        portfolio_returns,
+
+        confidence
+    )
+
+
+    tail_losses = (
+
+        portfolio_returns[
+            portfolio_returns <= var
+        ]
+    )
+
+
+    if len(tail_losses) == 0:
+
+        return np.nan
+
+
+    es = tail_losses.mean()
+
+
+    return es
+
+
+# ============================================================
+# 27. CALCULATE VaR AND ES FOR BOTH PORTFOLIOS
+# ============================================================
+
+benchmark_var = historical_var(
+
+    benchmark_returns
+)
+
+
+benchmark_es = historical_es(
+
+    benchmark_returns
+)
+
+
+alternative_var = historical_var(
+
+    alternative_returns
+)
+
+
+alternative_es = historical_es(
+
+    alternative_returns
+)
+
+
+print(
+    "\n" + "=" * 70
+)
+
+print(
+    "TAIL RISK ANALYSIS"
+)
+
+print(
+    "=" * 70
+)
+
+
+print(
+    "\nHistorical VaR and Expected Shortfall"
+)
+
+
+print(
+    "\nConfidence level:",
+    VAR_CONFIDENCE
+)
+
+
+print(
+    "\nEqual Weight:"
+)
+
+
+print(
+    "VaR 95%:",
+    benchmark_var
+)
+
+
+print(
+    "ES 95%:",
+    benchmark_es
+)
+
+
+print(
+    "\nMax-40:"
+)
+
+
+print(
+    "VaR 95%:",
+    alternative_var
+)
+
+
+print(
+    "ES 95%:",
+    alternative_es
+)
+
+
+# ============================================================
+# 28. PORTFOLIO TAIL RISK COMPARISON
+# ============================================================
+
+tail_risk_comparison = pd.DataFrame({
+
+    "Portfolio": [
+
+        "Equal_Weight",
+
+        "Max_40"
+
+    ],
+
+    "Historical_VaR_95%": [
+
+        benchmark_var,
+
+        alternative_var
+
+    ],
+
+    "Expected_Shortfall_95%": [
+
+        benchmark_es,
+
+        alternative_es
+
+    ]
+})
+
+
+print(
+    "\n" + "=" * 70
+)
+
+print(
+    "TAIL RISK COMPARISON"
+)
+
+print(
+    "=" * 70
+)
+
+
+print(
+    tail_risk_comparison
+)
+
+
+# ============================================================
+# 29. CREATE BENCHMARK VS ALTERNATIVE RETURN SERIES
 # ============================================================
 
 portfolio_returns = pd.DataFrame({
@@ -1195,12 +1553,11 @@ portfolio_returns = pd.DataFrame({
 
     "Active_Return":
         active_returns
-
 })
 
 
 # ============================================================
-# 26. SAVE PROJECT 02 OUTPUTS
+# 30. SAVE PROJECT 02 OUTPUTS
 # ============================================================
 
 performance_comparison.to_csv(
@@ -1214,7 +1571,6 @@ performance_comparison.to_csv(
     ),
 
     index=False
-
 )
 
 
@@ -1227,7 +1583,6 @@ active_weight_table.to_csv(
         "active_weights.csv"
 
     )
-
 )
 
 
@@ -1240,7 +1595,6 @@ performance_attribution.to_csv(
         "performance_attribution.csv"
 
     )
-
 )
 
 
@@ -1253,7 +1607,6 @@ risk_contribution.to_csv(
         "risk_contribution.csv"
 
     )
-
 )
 
 
@@ -1266,7 +1619,6 @@ portfolio_returns.to_csv(
         "portfolio_returns.csv"
 
     )
-
 )
 
 
@@ -1279,7 +1631,6 @@ daily_active_contribution.to_csv(
         "daily_active_contribution.csv"
 
     )
-
 )
 
 
@@ -1292,10 +1643,25 @@ oos_covariance.to_csv(
         "oos_covariance_matrix.csv"
 
     )
+)
+
+
+tail_risk_comparison.to_csv(
+
+    os.path.join(
+
+        PROJECT_02_OUTPUT,
+
+        "tail_risk_comparison.csv"
+
+    ),
+
+    index=False
+)
 
 
 # ============================================================
-# 27. SUMMARY METRICS
+# 31. SUMMARY METRICS
 # ============================================================
 
 summary = pd.DataFrame({
@@ -1307,6 +1673,10 @@ summary = pd.DataFrame({
         "Alternative Total Return",
 
         "Active Total Return",
+
+        "Benchmark Annualized Return",
+
+        "Alternative Annualized Return",
 
         "Benchmark Volatility",
 
@@ -1322,9 +1692,18 @@ summary = pd.DataFrame({
 
         "Tracking Error",
 
-        "Information Ratio"
+        "Information Ratio",
+
+        "Benchmark Historical VaR 95%",
+
+        "Alternative Historical VaR 95%",
+
+        "Benchmark Expected Shortfall 95%",
+
+        "Alternative Expected Shortfall 95%"
 
     ],
+
 
     "Value": [
 
@@ -1332,39 +1711,71 @@ summary = pd.DataFrame({
             "Total_Return"
         ],
 
+
         alternative_metrics[
             "Total_Return"
         ],
 
+
         active_total_return,
 
+
+        benchmark_metrics[
+            "Annualized_Return"
+        ],
+
+
+        alternative_metrics[
+            "Annualized_Return"
+        ],
+
+
         benchmark_metrics[
             "Annualized_Volatility"
         ],
 
+
         alternative_metrics[
             "Annualized_Volatility"
         ],
+
 
         benchmark_metrics[
             "Sharpe_Ratio"
         ],
 
+
         alternative_metrics[
             "Sharpe_Ratio"
         ],
+
 
         benchmark_metrics[
             "Maximum_Drawdown"
         ],
 
+
         alternative_metrics[
             "Maximum_Drawdown"
         ],
+
 
         annualized_tracking_error,
 
-        information_ratio
+
+        information_ratio,
+
+
+        benchmark_var,
+
+
+        alternative_var,
+
+
+        benchmark_es,
+
+
+        alternative_es
 
     ]
 
@@ -1382,12 +1793,11 @@ summary.to_csv(
     ),
 
     index=False
-
 )
 
 
 # ============================================================
-# 28. FINAL PROJECT 02 SUMMARY
+# 32. FINAL PROJECT 02 SUMMARY
 # ============================================================
 
 print(
@@ -1422,7 +1832,7 @@ print(
 
 
 print(
-    "\nActive return:",
+    "\nActive total return:",
     active_total_return
 )
 
@@ -1436,6 +1846,30 @@ print(
 print(
     "\nInformation ratio:",
     information_ratio
+)
+
+
+print(
+    "\nEqual Weight VaR 95%:",
+    benchmark_var
+)
+
+
+print(
+    "Equal Weight ES 95%:",
+    benchmark_es
+)
+
+
+print(
+    "\nMax-40 VaR 95%:",
+    alternative_var
+)
+
+
+print(
+    "Max-40 ES 95%:",
+    alternative_es
 )
 
 
