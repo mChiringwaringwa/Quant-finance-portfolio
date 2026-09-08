@@ -436,24 +436,31 @@ Short-Term Trading Engine
         └── Execution / backtesting
 
 The three-project architecture separates the responsibilities clearly:
-Project
-Primary Question
+
+Project Primary Question
+
 Project 01
 What should we invest in and how should the portfolio be constructed?
+
 Project 02
 How does the selected portfolio perform and what risks does it carry?
+
 Project 03
 How can we trade the same selected portfolio over the short term?
+
 Project 03 therefore operates on the same selected investment universe established by Project 01, rather than independently redefining the portfolio.
-Tools
+
+Tools:
 Python
 NumPy
 pandas
 Matplotlib
 yfinance
 Files
+
 portfolio_risk_performance.py
 Contains the complete Python implementation of the portfolio:
+
 Risk analysis
 Performance analysis
 Benchmark-relative analysis
@@ -464,8 +471,10 @@ Risk contribution
 Performance attribution
 Historical VaR
 Expected Shortfall
+
 Project 02 Outputs
 The analysis produces:
+
 performance_comparison.csv
 active_weights.csv
 performance_attribution.csv
@@ -474,13 +483,20 @@ portfolio_returns.csv
 daily_active_contribution.csv
 oos_covariance_matrix.csv
 risk_performance_summary.csv
+
 These outputs provide the numerical evidence supporting the risk, performance, attribution, and benchmark-relative conclusions documented above.
+
 Conclusion
 Project 02 provides an independent risk and performance analytics layer for the portfolios produced by Project 01.
+
 Rather than changing the portfolio construction decision, it evaluates the realised behaviour of the frozen portfolios across:
+
 performance → benchmark-relative performance → risk decomposition → tail risk → attribution
+
 The final OOS results show that the equal-weight benchmark achieved the higher return, while the Max-40 portfolio displayed slightly lower historical tail risk.
+
 The analysis therefore demonstrates that portfolio evaluation requires a multi-dimensional assessment of:
+
 Return
 Active risk
 Portfolio risk contribution
