@@ -157,69 +157,97 @@ The difference is important because renormalisation would change the frozen Proj
 The historical sample is divided chronologically into:
 80% Development
 20% Final Unseen Test
+
 No future observations from the final test period are used during parameter selection.
+
 Development Period
 28 July 2025
         to
 1 May 2026
 Observations:
 193
+
 Final Unseen Test Period
 4 May 2026
         to
 14 July 2026
 Observations:
 49
+
 The final test therefore represents observations that were not used in the initial parameter-selection process.
-9. Parameter Optimisation
+
+## 9. Parameter Optimisation
 The initial parameter grid tested:
 Short SMA
 10
 15
 20
 25
+
 Long SMA
 40
 50
 60
+
 RSI Threshold
 60
 70
 80
+
 Total combinations:
+4 * 3 * 3 = 36
+
 Therefore:
-36 parameter combinations
-were evaluated on the development period.
+36 parameter combinations were evaluated on the development period.
+
 Invalid combinations where the short window was greater than or equal to the long window were excluded.
-10. Development-Period Result
+
+## 10. Development-Period Result
 The best development specification was:
 Short SMA = 25
 Long SMA  = 40
 RSI       = 60
 Development return:
+7.388%
+
 This specification was then carried forward for the fixed-strategy comparison.
-Importantly, the development result is not treated as evidence of future profitability. It was used only to establish the trading specification before the final unseen test.
-11. Expanding Walk-Forward Validation
+
+Importantly, the development result is not treated as evidence of future profitability.
+
+It was used only to establish the trading specification before the final unseen test.
+
+## 11. Expanding Walk-Forward Validation
 To test whether parameter optimisation remains useful through time, an expanding walk-forward procedure was implemented.
+
 Configuration:
 Training window = 100 observations
 Test window     = 30 observations
+
 At each step:
 Train using historical observations only.
+
 Test the available trading parameter combinations.
+
 Select the best parameters.
+
 Apply those parameters to the next unseen test window.
+
 Expand the training sample.
+
 Repeat.
+
 This simulates a researcher periodically recalibrating the trading strategy as additional historical information becomes available.
-Expanding Parameter Selections
+
+# Expanding Parameter Selections
 The optimisation selected:
 Short = 25
 Long  = 60
 RSI   = 60
+
 for all three reported test windows.
 This indicates strong parameter stability across the expanding training windows.
-12. Expanding Walk-Forward Results
+
+## 12. Expanding Walk-Forward Results
 Method
 Average Return
 Total Compounded Return
