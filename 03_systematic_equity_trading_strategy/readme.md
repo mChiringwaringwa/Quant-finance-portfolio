@@ -106,10 +106,11 @@ A 14-period Relative Strength Index is calculated.
 The strategy requires:
 RSI > RSI_threshold
 Therefore, the long signal is:
-
-            -1, SMA_short,t > SMA_long,t & RSI > RSI_threshold
-Signal_t = 
-            0, otherwise
+```text
+           |--1, SMA_short,t > SMA_long,t & RSI > RSI_threshold
+Signal_t = |
+           |--0, otherwise
+```
 where:
 1 = invested
 0 = no exposure / cash
