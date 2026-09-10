@@ -110,11 +110,11 @@ Therefore, the long signal is:
            |--1, SMA_short,t > SMA_long,t & RSI > RSI_threshold
 Signal_t = |
            |--0, otherwise
-```
+
 where:
 1 = invested
 0 = no exposure / cash
-
+```
 ## 6. Avoiding Look-Ahead Bias
 The trading signal is lagged by one trading day before being applied to returns.
 The strategy return is:
