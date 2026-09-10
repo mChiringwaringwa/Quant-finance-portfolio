@@ -118,8 +118,11 @@ where:
 ## 6. Avoiding Look-Ahead Bias
 The trading signal is lagged by one trading day before being applied to returns.
 The strategy return is:
+R_strategy,t = Signal_t-1 * R_t
 
-rather than:
+Rather than:
+Signal_t * R_t 
+
 This ensures that information from day (t) is not used to generate a return on the same day.
 This provides an important safeguard against look-ahead bias.
 
@@ -128,22 +131,29 @@ Signals are generated at the individual asset level.
 The resulting strategy returns are then combined using the frozen Project 01 weights.
 
 For the frozen portfolio:
+R_portfolio,t = 0.40R_AAPL,t + 0.40R_GOOG,t + 0.20R_META,t
+
 where each asset return has already been adjusted by its trading signal.
 
 Importantly, active assets are not renormalised.
+
 For example, if:
 AAPL = invested
 GOOG = not invested
 META = invested
+
 the exposure remains:
 AAPL = 40%
 GOOG = 0%
 META = 20%
+
 rather than being rescaled to:
 AAPL = 66.67%
 META = 33.33%
+
 The difference is important because renormalisation would change the frozen Project 01 portfolio specification.
-8. Development / Final Test Framework
+
+## 8. Development / Final Test Framework
 The historical sample is divided chronologically into:
 80% Development
 20% Final Unseen Test
