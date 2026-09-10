@@ -1,4 +1,4 @@
-# Project 03 — Systematic Short-Term Trading Engine
+### Project 03 — Systematic Short-Term Trading Engine
 
 ## 1. Project Overview
 
@@ -25,7 +25,7 @@ The strategy is applied to the same assets selected by Project 01.
 
 ---
 
-# 2. Relationship with the Other Projects
+## 2. Relationship with the Other Projects
 
 The three projects form a single quantitative investment research pipeline:
 
@@ -42,63 +42,93 @@ Portfolio Risk & Performance Analytics
                 v
 PROJECT 03
 Systematic Short-Term Trading Engine
+
+```
 Each project answers a different question.
-Project 01
+
+# Project 01
 Which assets should be selected and how should the portfolio be constructed?
-Project 02
+
+# Project 02
 How did the selected portfolio perform and what risks did it carry?
-Project 03
+
+# Project 03
 Can systematic short-term trading control exposure to the same selected portfolio?
+
 This separation prevents Project 03 from redefining the investment universe or changing the strategic portfolio weights.
-3. Frozen Portfolio
+
+## 3. Frozen Portfolio
 Project 03 inherits the portfolio specification from Project 01.
 The selected portfolio used in the trading engine is:
-Asset
-Frozen Weight
-AAPL
-40%
-GOOG
-40%
-META
-20%
+
+|Asset | Frozen Weight|
+|------|---------------|
+|AAPL | 40%|
+|GOOG | 40%|
+|META | 20%|
+
 The weights are treated as fixed inputs.
+
 Project 03:
 does not select assets;
 does not optimise portfolio weights;
 does not replace the Project 01 portfolio;
 does not perform asset selection.
 Trading parameters are optimised independently of portfolio construction.
-4. Investment Universe
+
+## 4. Investment Universe
 The trading universe is therefore:
-AAPL
-GOOG
-META
+  AAPL
+  GOOG
+  META
 These assets are inherited from the frozen Project 01 portfolio.
+
 The trading signal is calculated separately for each asset, while the resulting asset-level returns are aggregated using the frozen portfolio weights.
-5. Trading Strategy
+
+## 5. Trading Strategy
 The strategy combines trend and momentum information.
-5.1 Moving Average Signal
+
+# 5.1 Moving Average Signal
 Two simple moving averages are calculated:
-and
+SMA_short,t 
+And:
+SMA_long,t
+
 A bullish trend condition occurs when:
-5.2 RSI Filter
+SMA_short,t > SMA_long,t 
+
+The signal is therefore:
+Signal = 1  → Invested
+Signal = 0  → No exposure / Cash
+
+# 5.2 RSI Filter
 A 14-period Relative Strength Index is calculated.
 The strategy requires:
+RSI > RSI_threshold
 Therefore, the long signal is:
+
+            -1, SMA_short,t > SMA_long,t & RSI > RSI_threshold
+Signal_t = 
+            0, otherwise
 where:
 1 = invested
 0 = no exposure / cash
-6. Avoiding Look-Ahead Bias
+
+## 6. Avoiding Look-Ahead Bias
 The trading signal is lagged by one trading day before being applied to returns.
 The strategy return is:
+
 rather than:
 This ensures that information from day (t) is not used to generate a return on the same day.
 This provides an important safeguard against look-ahead bias.
-7. Portfolio-Level Trading Return
+
+## 7. Portfolio-Level Trading Return
 Signals are generated at the individual asset level.
 The resulting strategy returns are then combined using the frozen Project 01 weights.
+
 For the frozen portfolio:
 where each asset return has already been adjusted by its trading signal.
+
 Importantly, active assets are not renormalised.
 For example, if:
 AAPL = invested
