@@ -66,6 +66,7 @@ Portfolio Risk & Performance Analysis
       ↓
 Short-Term Trading Overlay
 
+```
 ## Projects
 
 ### Project 01 — Factor-Based Asset Selection & Robust Portfolio Optimization
