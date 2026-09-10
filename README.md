@@ -283,6 +283,8 @@ The development period is further divided into:
 The validation period is used for hyperparameter selection.
 
 This produces the following research structure:
+
+```text
   Historical Data
       |
       +---- 80% Development
@@ -292,7 +294,8 @@ This produces the following research structure:
       |          +---- 20% Validation
       |
       +---- 20% Final Unseen Test
-      
+
+   ```   
 The final test is therefore used only for final model evaluation.
 
 ## Key Research Principles
@@ -850,6 +853,7 @@ Project 03 demonstrates that a short-term trading overlay can be applied to the 
 
 The architecture is:
 
+```text
 Strategic Portfolio
         ↓
 Frozen Weights
@@ -859,6 +863,7 @@ Trading Signals
 Dynamic Exposure
         ↓
 Portfolio Trading Return
+```
 
 This separates strategic asset allocation from tactical trading decisions.
 
@@ -934,6 +939,7 @@ It does not redefine the investment universe or portfolio weights.
 Project 03 reads the frozen portfolio specification and applies the trading engine to the same selected assets.
 
 This creates a reproducible data flow:
+```text
 
 Raw Market Data
       ↓
@@ -948,13 +954,13 @@ Portfolio Construction
       ↓
 Frozen Portfolio
       ↓
-      ┌───────────────────────┐
-      ↓                       ↓
+ ┌───────────────────────┐
+ ↓                       ↓
 Project 02               Project 03
 Risk & Performance        Short-Term
 Analytics                 Trading Overlay
 
-
+```
 ## Project Responsibilities
 
 | Research component  | Project 01 |   Project 02|Project 03 |
@@ -1075,6 +1081,7 @@ Key quantitative techniques include:
 
 ## Overall Research Methodology
 The complete research process follows:
+```text
 
 1. Define Investment Universe
              ↓
@@ -1109,6 +1116,7 @@ The complete research process follows:
 16. Regime Robustness
              ↓
 17. Final Unseen OOS Trading Test
+```
 
 This creates a complete quantitative investment research workflow from asset selection through portfolio construction, risk analysis, and tactical trading.
 
@@ -1141,6 +1149,7 @@ Asset selection, portfolio construction, risk analysis, and trading should be se
 
 ## Overall Portfolio Conclusion
 The three projects form an integrated quantitative investment research portfolio:
+```text
 
 PROJECT 01
 Asset Selection & Portfolio Construction
@@ -1170,6 +1179,7 @@ Trading Signal Development
 Walk-Forward Validation
     ↓
 Final Unseen OOS Evaluation
+```
 
 The most important conclusion is that quantitative finance research should not be judged simply by whether a model produces a high historical return.
 
