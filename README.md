@@ -1001,9 +1001,7 @@ Analytics                 Trading Overlay
 | Final trading OOS test |  — |  — | ✓ |
 
 ---
-
  
-
 ### Project Outputs
 
 # Project 01
@@ -1113,6 +1111,7 @@ The complete research process follows:
 
 This creates a complete quantitative investment research workflow from asset selection through portfolio construction, risk analysis, and tactical trading.
 
+---
 ## Overall Research Interpretation
 An important principle demonstrated by this portfolio is that model complexity does not automatically translate into superior investment performance.
 
