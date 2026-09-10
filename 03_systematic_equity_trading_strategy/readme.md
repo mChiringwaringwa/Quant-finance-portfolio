@@ -46,13 +46,13 @@ Systematic Short-Term Trading Engine
 ```
 Each project answers a different question.
 
-# Project 01
+> Project 01
 Which assets should be selected and how should the portfolio be constructed?
 
-# Project 02
+> Project 02
 How did the selected portfolio perform and what risks did it carry?
 
-# Project 03
+> Project 03
 Can systematic short-term trading control exposure to the same selected portfolio?
 
 This separation prevents Project 03 from redefining the investment universe or changing the strategic portfolio weights.
@@ -88,7 +88,7 @@ The trading signal is calculated separately for each asset, while the resulting 
 ## 5. Trading Strategy
 The strategy combines trend and momentum information.
 
-# 5.1 Moving Average Signal
+> 5.1 Moving Average Signal
 Two simple moving averages are calculated:
 
 ```text
@@ -104,7 +104,7 @@ Signal = 1  → Invested
 Signal = 0  → No exposure / Cash
 
 ```
-# 5.2 RSI Filter
+> 5.2 RSI Filter
 A 14-period Relative Strength Index is calculated.
 
 The strategy requires:
@@ -251,7 +251,7 @@ At each step:
 
 This simulates a researcher periodically recalibrating the trading strategy as additional historical information becomes available.
 
-# Expanding Parameter Selections
+> Expanding Parameter Selections
 The optimisation selected:
 ```text
 Short = 25
