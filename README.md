@@ -710,7 +710,7 @@ The strategy does not remain continuously invested.
 
 Asset-level diagnostics showed:
 
-Asset   Frozen Weight   Average Signal  Signal = 1 Days   Signal = 0 Days
+|Asset  | Frozen Weight |  Average Signal | Signal = 1 Days  | Signal = 0 Days|
 |--------|-------|-----------|----------|-------|
 | AAPL | 40% | 29.34% | 71 | 171|
 |GOOG  | 40% | 30.58% | 74 | 168|
