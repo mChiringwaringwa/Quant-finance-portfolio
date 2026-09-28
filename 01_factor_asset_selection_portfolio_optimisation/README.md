@@ -51,7 +51,7 @@ outputs/processed_prices.csv
 
 # 4. Chronological Data Architecture
 The project uses a strict chronological data structure.
-
+```text
 FULL DATASET
 │
 ├── DEVELOPMENT SAMPLE
@@ -68,7 +68,7 @@ Development            2025-07-28 → 2026-05-01            193
 Final unseen test      2026-05-04 → 2026-07-14            49
 
 Chronology check: PASSED
-
+```
 The final 49 observations are never used for factor selection, hyperparameter selection, or portfolio optimization.
 
 # 5. Factor Model
@@ -257,7 +257,7 @@ while remaining close to the baseline.
 
 # 13. Why the Representative Configuration Matters
 The selection procedure is therefore:
-
+```text
 1. Define baseline before optimization
              ↓
 2. Test parameter grid
@@ -277,7 +277,7 @@ The selection procedure is therefore:
 This is preferable to simply choosing:
       
       argmax(validation_sharpe)
-
+```
 because the latter could select an arbitrary parameter combination when many configurations perform identically.
 The approach favours parsimony and stability rather than optimization extremism.
 
@@ -484,7 +484,7 @@ The project acknowledges that the candidate universe consists of pre-defined cur
 
 # 23. Research Workflow
 The complete Project 01 pipeline is:
-
+```text
 Raw Market Data
        ↓
 Data Cleaning & Alignment
@@ -528,7 +528,7 @@ Freeze Portfolio Specifications
 Transaction-Cost Sensitivity
        ↓
 Final Unseen OOS Test
-
+```
 # 24. Key Research Results
 
 The most important findings from Project 01 are:
@@ -642,13 +642,13 @@ The selected asset universe is then frozen before portfolio optimization and fin
 
 # 28. Project 01 vs Project 02
 Project 01 deliberately ends after establishing:
-
+```text
 Asset Selection
         +
 Portfolio Construction
         +
 OOS Portfolio Evaluation
-
+```
 Benchmark-relative analysis and detailed performance attribution are reserved for Project 02.
 
 Project 02 therefore builds on the frozen portfolio specifications produced here and investigates:
@@ -666,7 +666,7 @@ This separation prevents Project 01 from becoming an unnecessarily broad project
 
 # 29. Repository Structure
 Recommended GitHub structure:
-
+```text
 project-01-multifactor-portfolio/
 │
 ├── README.md
@@ -694,7 +694,7 @@ project-01-multifactor-portfolio/
     ├── selection_frequency.png
     ├── correlation_matrix.png
     └── portfolio_comparison.png
-    
+    ```
 Important: In a public GitHub repository, raw market data should only be included if its redistribution is permitted. Otherwise, provide a data-download/preparation script and document the required input format.
 
 # 30. Proffessional Summary
