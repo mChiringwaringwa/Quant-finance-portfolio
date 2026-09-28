@@ -413,7 +413,8 @@ The project demonstrates how a portfolio performance can be evaluated from both 
 ## Key Findings
 The final out-of-sample analysis showed approximately:
 
-|Portfolio  | Total Return| |---------|-------------------|
+|Portfolio  | Total Return| 
+|---------|-------------------|
 |Equal Weight | 5.75% |
 |Max-40 | 5.07% |
 
