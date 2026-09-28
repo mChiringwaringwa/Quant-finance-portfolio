@@ -454,7 +454,8 @@ Instead, Project 03 keeps the portfolio composition fixed and focuses on:
 # Frozen Portfolio
 The trading engine inherits the Project 01 portfolio:
 
-| Asset | Frozen Weight| |---------|------------|
+| Asset | Frozen Weight| 
+|---------|------------|
 |AAPL | 40% |
 |GOOG | 40% |
 |META | 20% |
@@ -993,7 +994,6 @@ Analytics                 Trading Overlay
 |Information ratio   |             —  |                  ✓|— | 
 |Risk contribution    |            —   |                 ✓|— | 
 |Performance attribution |         —   |                 ✓|— | 
-
 | VaR / Expected Shortfall |  — | ✓|  —| 
 | Trading signals |  — |  — | ✓| 
 | SMA strategy |  — |  — | ✓| 
