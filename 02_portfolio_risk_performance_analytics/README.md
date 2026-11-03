@@ -214,8 +214,9 @@ Project 02 also evaluates portfolio downside tail risk using return observations
 ## Historical Value at Risk
 
 Historical VaR at the **95% confidence level** is estimated from the 5th percentile of the portfolio return distribution.
+
 $$
-VaR_{95\%} = Q_{0.05}(R_P)
+VaR_{95\%} = \Q_{0.05}(R_P)
 $$
 
 The negative-return convention used in the analysis represents the portfolio return threshold associated with the worst 5% of historical observations.
@@ -225,7 +226,7 @@ The negative-return convention used in the analysis represents the portfolio ret
 Expected Shortfall measures the average portfolio return in the tail beyond the 95% VaR threshold:
 
 $$
-ES_{95\%} = E[R_P\mid R_P\leq VaR_{95\%}]
+ES_{95\%} = \E[R_P\mid R_P\leq VaR_{95\%}]
 $$
 
 ES therefore provides additional information about the severity of losses once the VaR threshold has been breached.
