@@ -226,8 +226,7 @@ The negative-return convention used in the analysis represents the portfolio ret
 Expected Shortfall measures the average portfolio return in the tail beyond the 95% VaR threshold:
 
 $$
-ES_{95\%}
-=
+ES_{95\%} =
 E[R_P\mid R_P\leq VaR_{95\%}]
 $$
 
